@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
-    'client_payment'
+    'client_payment',
+    'django_bitly'
 ]
 
 MIDDLEWARE = [
@@ -70,7 +72,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'payment.wsgi.application'
-
+SITE_ID = 1
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -115,8 +117,15 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+BITLY_LOGIN = "o_25v2743t94"
+BITLY_API_KEY = "c3f537f9accd271c36d0be7be0abed5f953fee36"
+BITLY_TIMEOUT = 5
+BASE_URL = 'http://127.0.0.1:8001/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+PROJECT_DIR = os.path.dirname(__file__)
+STATICFILES_DIRS = [
+    os.path.join(PROJECT_DIR, 'static')
+]
