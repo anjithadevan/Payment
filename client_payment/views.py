@@ -10,18 +10,15 @@ from rest_framework.response import Response
 
 from client_payment.models import Payment
 
-stripe.api_key = "sk_test_51HPWldKVHvNCtbw18iAHyPLWQg0ujNRulQe7gyMsdHTNtNanwluoXOHDHDBYptPYU6bKEKcOdRig1kATuB7fyzBF00piz1d1Xh"
-
 
 class PaymentViewSet(APIView):
     queryset = Payment.objects.all()
     permission_classes = (AllowAny,)
 
     def post(self, request, format=None):
-        id = request.data['id']
         if request.data['stripeToken']:
             try:
-                payment = Payment.objects.get(id=id)
+                payment = Payment.objects.get(id=request.data['id'])
                 customer = stripe.Customer.create(email=payment.client_email, name=payment.client_name, source=request.data['stripeToken'])
                 charge = stripe.Charge.create(customer=customer, amount=payment.amount, currency="inr")
                 payment.payment_status = True

@@ -1,8 +1,7 @@
 from django.db import models
-from django_bitly.models import Bittle
-from django.conf import settings
-from payment.settings import BASE_URL, BITLY_API_KEY
-# import bitly_api
+from payment.settings import BASE_URL, BITLY_API_KEY, BITLY_GROUP, BITLY_BASE_URL
+import requests
+import json
 
 
 class Payment(models.Model):
@@ -21,10 +20,22 @@ class Payment(models.Model):
         super(Payment, self).save(*args, **kwargs)
         payment = Payment.objects.latest('id')
         if payment.short_url == '' or payment.short_url is None:
-            bittle = Bittle.objects.bitlify(payment)
-            payment.short_url = bittle.shortUrl
+            long_url = BASE_URL + 'api/p1/payment/' + str(self.id) + '/'
+            payment.short_url = self.set_shortlink(long_url)
             payment.save()
 
-    def get_absolute_url(self):
-        path = BASE_URL + 'api/p1/payment/' + str(self.id) + '/'
-        return path
+    def set_shortlink(self, long_url):
+        headers = {
+            "Authorization": "Bearer "+BITLY_API_KEY,
+            "Content-Type": "application/json"
+        }
+        data = {
+            "group_guid": BITLY_GROUP,
+            "domain": "bit.ly",
+            "long_url": long_url
+        }
+        url = BITLY_BASE_URL
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 200:
+            content = json.loads(response.content)
+            return content['link']
