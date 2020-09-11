@@ -3,9 +3,13 @@ This application is created for getting payment from a client for an organizatio
 
 steps:
 1.Install requirements - pip install -r requirements.txt
+
 2.Create data base 
+
   a) python manage.py makemigrations
   b) python manage.py migrate
+  
 3.Create a bitley and stripe account.Put the keys in settings.
+
 4.Run the project - python manage.py runserver
 
