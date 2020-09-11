@@ -4,7 +4,10 @@
     <meta charset="utf-8">
       <script src="https://js.stripe.com/v3/"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <title class="align-items-center">{% block title %}Pay Money{% endblock %}</title>
     {% block style %}{% endblock %}
   </head>
@@ -27,6 +30,25 @@
 
           <button id="payment-submit">Submit Payment</button>
       </form>
+      <button type="button" class="btn btn-info btn-lg" id="modal-btn" data-toggle="modal" data-target="#myModal" style="display:none">Open Modal</button>
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close close-modal" data-dismiss="modal" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                  <p id="payment-success">Successfully Payed</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default close-modal" data-dismiss="modal" onclick="closeModal()">Close</button>
+                </div>
+              </div>
+            </div>
+        </div>
+</div>
 
   </body>
 </html>
@@ -141,7 +163,9 @@ var url1 = $(location).attr('href'),
     parts = url1.split("/"),
     last_part = parts[parts.length-2];
 
-
+function closeModal(){
+    location.reload();
+}
 function payment(token){
         $.ajax({
               type: "POST",
@@ -152,10 +176,11 @@ function payment(token){
               },
               data: {"stripeToken" : token,"id":last_part},
               success: function (data) {
-                alert('successfully payed');
-                location.reload()
+                $("#modal-btn").click();
               },
               error: function (data) {
+                $("#payment-success").text("Failed Payment")
+                $("#modal-btn").click();
                 console.log(data,'error');
               }
             });

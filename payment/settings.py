@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import stripe
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -118,10 +123,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-BITLY_LOGIN = os.environ['BITLY_LOGIN']
-BITLY_GROUP = os.environ['BITLY_GROUP']
-BITLY_API_KEY = os.environ['BITLY_API_KEY']
-stripe.api_key = os.environ['STRIPE_API_KEY']
+BITLY_LOGIN = env('BITLY_LOGIN')
+BITLY_GROUP = env('BITLY_GROUP')
+BITLY_API_KEY = env('BITLY_API_KEY')
+stripe.api_key = env('STRIPE_API_KEY')
 BITLY_TIMEOUT = 5
 BASE_URL = "http://127.0.0.1:8001/"
 BITLY_BASE_URL = "https://api-ssl.bitly.com/v4/shorten"
