@@ -10,10 +10,10 @@ class Payment(models.Model):
     """
     invoice_number = models.CharField(max_length=10, unique=True)
     client_name = models.CharField(max_length=100)
-    client_email = models.EmailField(max_length=254)
+    client_email = models.EmailField(max_length=254, unique=True)
     project_name = models.CharField(max_length=100)
     amount = models.IntegerField(null=False, blank=False)
-    short_url = models.CharField(max_length=200, blank=True)
+    short_url = models.CharField(max_length=200, blank=True, null=True)
     payment_status = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
@@ -26,7 +26,7 @@ class Payment(models.Model):
 
     def set_shortlink(self, long_url):
         headers = {
-            "Authorization": "Bearer "+BITLY_API_KEY,
+            "Authorization": "Bearer " + BITLY_API_KEY,
             "Content-Type": "application/json"
         }
         data = {
@@ -39,3 +39,6 @@ class Payment(models.Model):
         if response.status_code == 200:
             content = json.loads(response.content)
             return content['link']
+
+    def __str__(self):
+        return '%s %s %s' % (self.id, self.client_name, self.client_email)

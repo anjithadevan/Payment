@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from client_payment.models import Payment
+from client_payment.serializers import PaymentSerializer
 
 
 class PaymentViewSet(APIView):
@@ -16,10 +17,12 @@ class PaymentViewSet(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request, format=None):
-        if request.data['stripeToken']:
+        serializer = PaymentSerializer(data=request.data)
+        if serializer.is_valid():
             try:
-                payment = Payment.objects.get(id=request.data['id'])
-                customer = stripe.Customer.create(email=payment.client_email, name=payment.client_name, source=request.data['stripeToken'])
+                payment = Payment.objects.get(id=serializer.data['id'])
+                customer = stripe.Customer.create(email=payment.client_email, name=payment.client_name,
+                                                  source=serializer.data['stripeToken'])
                 charge = stripe.Charge.create(customer=customer, amount=payment.amount, currency="inr")
                 payment.payment_status = True
                 payment.save()
@@ -27,5 +30,3 @@ class PaymentViewSet(APIView):
             except ObjectDoesNotExist:
                 return Response('Failed', status=HTTP_400_BAD_REQUEST)
         return Response('Failed', status=HTTP_400_BAD_REQUEST)
-
-
